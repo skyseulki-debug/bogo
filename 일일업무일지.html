@@ -11,428 +11,542 @@
     body {
       font-family: 'Malgun Gothic', '맑은 고딕', AppleGothic, 'Apple SD Gothic Neo', sans-serif;
       background: #e8e8e8;
-      padding: 12px 10px 30px;
       min-height: 100vh;
     }
 
+    /* ── 화면 전환 ── */
+    .screen { display: none; }
+    .screen.active { display: block; padding: 12px 10px 30px; }
     .page { max-width: 480px; margin: 0 auto; }
 
-    #report {
-      background: #fff;
-      padding: 10px;
-      border: 1px solid #ccc;
+    /* ── 게시판 ── */
+    .brd-head {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .brd-title { font-size: 17px; font-weight: bold; color: #222; }
+    .btn-new {
+      background: #222; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 18px; font-size: 14px; cursor: pointer; font-family: inherit;
+    }
+    .post-list {
+      background: #fff; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    }
+    .post-row {
+      display: flex; align-items: center; padding: 14px 14px;
+      border-bottom: 1px solid #f0f0f0; cursor: pointer;
+    }
+    .post-row:last-child { border-bottom: none; }
+    .post-row:active { background: #f8f8f8; }
+    .post-d { font-weight: bold; font-size: 14px; flex: 1; color: #111; }
+    .post-g { font-size: 12px; color: #666; margin-right: 10px; }
+    .del-btn {
+      background: none; border: 1px solid #e0e0e0; border-radius: 6px;
+      padding: 4px 10px; font-size: 12px; color: #bbb;
+      cursor: pointer; font-family: inherit;
+    }
+    .empty {
+      text-align: center; padding: 44px 16px;
+      color: #aaa; font-size: 14px; line-height: 2;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      table-layout: fixed;
+    /* ── 폼 화면 상단 ── */
+    .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .btn-back {
+      background: none; border: 1px solid #ccc; border-radius: 8px;
+      padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
     }
+    .topbar-ttl { font-size: 15px; font-weight: bold; flex: 1; }
 
-    td {
-      border: 1px solid #555;
-      padding: 3px 4px;
-      vertical-align: middle;
+    /* ── 보고서 테이블 ── */
+    #report { background: #fff; padding: 8px; border: 1px solid #aaa; }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .t td { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; }
+
+    .C-TITLE {
+      font-size: 18px; font-weight: bold;
+      text-align: center; height: 52px; vertical-align: middle;
     }
-
-    .c-title {
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-      vertical-align: middle;
-      height: 70px;
-      letter-spacing: -0.5px;
+    .C-SEC {
+      background: #bebebe; text-align: center;
+      font-weight: bold; padding: 4px 3px; letter-spacing: 1px;
     }
-
-    .c-section {
-      background: #c0c0c0;
-      text-align: center;
-      font-weight: bold;
-      padding: 5px 4px;
-      letter-spacing: 2px;
+    .C-LBL {
+      text-align: center; background: #ebebeb;
+      font-weight: bold; white-space: nowrap;
     }
-
-    .c-label {
-      text-align: center;
-      background: #ebebeb;
-      font-weight: bold;
-      white-space: nowrap;
+    .C-SUM {
+      text-align: center; background: #ebebeb;
+      font-size: 11px; font-weight: bold;
     }
+    .C-VAL { text-align: center; font-weight: bold; }
 
-    .c-time {
-      text-align: center;
-      white-space: nowrap;
-      font-size: 11px;
-      color: #222;
+    /* ── 입력 공통 ── */
+    input[type="text"], input[type="number"] {
+      width: 100%; border: none; outline: none; font-family: inherit;
+      font-size: 11.5px; background: transparent; color: #111;
+      min-height: 17px; padding: 1px 2px;
     }
-
-    .c-total {
-      text-align: center;
-      font-weight: bold;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="number"] {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-family: inherit;
-      font-size: 12px;
-      background: transparent;
-      color: #111;
-      min-height: 20px;
-    }
-
     input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ── 시간 입력 ── */
+    .tw-wrap {
+      display: flex; align-items: center;
+      justify-content: center; font-size: 11px; gap: 1px;
+    }
+    .tw-wrap input[type="text"] {
+      width: 22px !important; text-align: center !important;
+      padding: 1px 0 !important; min-height: auto !important;
+    }
+    .tw-sep { font-size: 11px; white-space: nowrap; color: #333; }
+
+    /* ── 합계 셀 입력 ── */
+    #prev-carry {
+      text-align: center; font-weight: bold; font-size: 12px;
     }
 
-    /* 버튼 영역 */
-    .btn-row {
-      margin-top: 14px;
-      display: flex;
-      gap: 8px;
-    }
-
+    /* ── 버튼 ── */
+    .btn-row { margin-top: 12px; display: flex; gap: 8px; }
     .btn {
-      flex: 1;
-      padding: 15px 8px;
-      font-size: 15px;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: opacity 0.15s;
+      flex: 1; padding: 14px 6px; font-size: 14px; font-weight: bold;
+      border: none; border-radius: 10px; cursor: pointer; font-family: inherit;
     }
+    .btn:active { opacity: .8; }
+    .btn-save { background: #333; color: #fff; }
+    .btn-img  { background: #fee500; color: #3c1e1e; }
+    .btn-rst  { background: #ddd; color: #444; flex: .7; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
 
-    .btn:active { opacity: 0.75; }
-
-    .btn-share {
-      background: #fee500;
-      color: #3c1e1e;
-      flex: 2;
-    }
-
-    .btn-share:disabled {
-      background: #f0d900;
-      color: #888;
-      cursor: not-allowed;
-    }
-
-    .btn-reset {
-      background: #d8d8d8;
-      color: #444;
-      flex: 1;
-    }
-
-    /* 토스트 */
-    #toast {
-      display: none;
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.78);
-      color: #fff;
-      padding: 11px 20px;
-      border-radius: 22px;
-      font-size: 13px;
-      z-index: 9999;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    /* 로딩 오버레이 */
+    /* ── 로딩 / 토스트 ── */
     #overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,0.7);
-      z-index: 9998;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      font-weight: bold;
-      color: #333;
-      font-family: inherit;
+      display: none; position: fixed; inset: 0;
+      background: rgba(255,255,255,.75); z-index: 9998;
+      justify-content: center; align-items: center;
     }
-
     #overlay.show { display: flex; }
-
-    .spinner {
-      width: 36px; height: 36px;
-      border: 4px solid #ddd;
-      border-top-color: #555;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 12px;
+    .spin {
+      width: 34px; height: 34px; border: 4px solid #ddd;
+      border-top-color: #555; border-radius: 50%;
+      animation: rot .8s linear infinite;
     }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .overlay-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    @keyframes rot { to { transform: rotate(360deg); } }
+    #toast {
+      display: none; position: fixed; bottom: 88px; left: 50%;
+      transform: translateX(-50%); background: rgba(0,0,0,.78);
+      color: #fff; padding: 10px 18px; border-radius: 20px;
+      font-size: 13px; z-index: 9999; white-space: nowrap;
+    }
   </style>
 </head>
 <body>
 
-<div class="page">
-  <!-- 폼 영역 (이미지로 캡처됨) -->
-  <div id="report">
-    <table>
-      <colgroup>
-        <col style="width:22%">
-        <col style="width:33%">
-        <col style="width:22%">
-        <col style="width:23%">
-      </colgroup>
-
-      <!-- 헤더: 일일업무일지 + 날짜 -->
-      <tr>
-        <td colspan="2" class="c-title">일일업무일지</td>
-        <td class="c-label">날짜</td>
-        <td><input type="text" id="f-date" placeholder="YYYY-MM-DD"></td>
-      </tr>
-
-      <!-- 금일주요업무 -->
-      <tr><td colspan="4" class="c-section">금일주요업무</td></tr>
-      <tr>
-        <td class="c-label">시 간</td>
-        <td colspan="3" class="c-label">업 무 내 용</td>
-      </tr>
-      <tr><td class="c-time">08시 - 09시</td><td colspan="3"><input type="text" id="t0"></td></tr>
-      <tr><td class="c-time">09시 - 10시</td><td colspan="3"><input type="text" id="t1"></td></tr>
-      <tr><td class="c-time">10시 - 11시</td><td colspan="3"><input type="text" id="t2"></td></tr>
-      <tr><td class="c-time">11시 - 12시</td><td colspan="3"><input type="text" id="t3"></td></tr>
-      <tr><td class="c-time">12시 - 13시</td><td colspan="3"><input type="text" id="t4"></td></tr>
-      <tr><td class="c-time">13시 - 14시</td><td colspan="3"><input type="text" id="t5"></td></tr>
-      <tr><td class="c-time">14시 - 15시</td><td colspan="3"><input type="text" id="t6"></td></tr>
-      <tr><td class="c-time">15시 - 16시</td><td colspan="3"><input type="text" id="t7"></td></tr>
-      <tr><td class="c-time">16시 - 17시</td><td colspan="3"><input type="text" id="t8"></td></tr>
-      <tr><td class="c-time">17시 - 18시</td><td colspan="3"><input type="text" id="t9"></td></tr>
-      <tr><td class="c-time">18시 - 19시</td><td colspan="3"><input type="text" id="t10"></td></tr>
-
-      <!-- 익일업무계획 -->
-      <tr><td colspan="4" class="c-section">익 일 업 무 계 획</td></tr>
-      <tr><td colspan="4" style="height:27px"><input type="text" id="n0"></td></tr>
-      <tr><td colspan="4" style="height:27px"><input type="text" id="n1"></td></tr>
-      <tr><td colspan="4" style="height:27px"><input type="text" id="n2"></td></tr>
-      <tr><td colspan="4" style="height:27px"><input type="text" id="n3"></td></tr>
-      <tr><td colspan="4" style="height:27px"><input type="text" id="n4"></td></tr>
-
-      <!-- 금일 지출 내용 -->
-      <tr><td colspan="4" class="c-section">금일 지출 내용</td></tr>
-      <tr>
-        <td colspan="2" class="c-label">구매사유</td>
-        <td class="c-label">금액</td>
-        <td class="c-label">비고</td>
-      </tr>
-      <tr>
-        <td colspan="2"><input type="text" class="er"></td>
-        <td><input type="number" class="ea" oninput="calcTotal()" placeholder="0"></td>
-        <td><input type="text" class="en"></td>
-      </tr>
-      <tr>
-        <td colspan="2"><input type="text" class="er"></td>
-        <td><input type="number" class="ea" oninput="calcTotal()" placeholder="0"></td>
-        <td><input type="text" class="en"></td>
-      </tr>
-      <tr>
-        <td colspan="2"><input type="text" class="er"></td>
-        <td><input type="number" class="ea" oninput="calcTotal()" placeholder="0"></td>
-        <td><input type="text" class="en"></td>
-      </tr>
-      <tr>
-        <td colspan="2"><input type="text" class="er"></td>
-        <td><input type="number" class="ea" oninput="calcTotal()" placeholder="0"></td>
-        <td><input type="text" class="en"></td>
-      </tr>
-      <tr>
-        <td colspan="2"><input type="text" class="er"></td>
-        <td><input type="number" class="ea" oninput="calcTotal()" placeholder="0"></td>
-        <td><input type="text" class="en"></td>
-      </tr>
-
-      <!-- 합계 -->
-      <tr>
-        <td class="c-label" style="font-size:12px">합 계</td>
-        <td></td>
-        <td class="c-total" id="total">0</td>
-        <td></td>
-      </tr>
-
-      <!-- 비고 -->
-      <tr>
-        <td class="c-label" style="font-size:12px">비 고</td>
-        <td colspan="3"><input type="text" id="remark"></td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- 버튼 -->
-  <div class="btn-row">
-    <button class="btn btn-share" id="shareBtn" onclick="captureAndShare()">
-      📷 이미지 저장 &amp; 공유
-    </button>
-    <button class="btn btn-reset" onclick="resetForm()">초기화</button>
+<!-- ═══════════════════════════════ 게시판 화면 ═══ -->
+<div id="sc-board" class="screen active">
+  <div class="page">
+    <div class="brd-head">
+      <span class="brd-title">📋 업무일지 게시판</span>
+      <button class="btn-new" onclick="openNew()">+ 새 작성</button>
+    </div>
+    <div class="post-list" id="post-list"></div>
   </div>
 </div>
 
-<!-- 로딩 -->
-<div id="overlay">
-  <div class="overlay-inner">
-    <div class="spinner"></div>
-    <span>이미지 생성 중...</span>
+<!-- ═══════════════════════════════ 작성/조회 화면 ═══ -->
+<div id="sc-form" class="screen">
+  <div class="page">
+    <div class="topbar">
+      <button class="btn-back" onclick="goBoard()">← 목록</button>
+      <span class="topbar-ttl" id="form-ttl">새 업무일지</span>
+    </div>
+
+    <!-- 보고서 (이미지 캡처 대상) -->
+    <div id="report">
+
+      <!-- 1. 헤더 -->
+      <table class="t">
+        <colgroup>
+          <col style="width:55%"><col style="width:18%"><col style="width:27%">
+        </colgroup>
+        <tr>
+          <td class="C-TITLE">일일업무일지</td>
+          <td class="C-LBL">날 짜</td>
+          <td><input type="text" id="f-date" placeholder="YYYY-MM-DD" autocomplete="off"></td>
+        </tr>
+      </table>
+
+      <!-- 2. 금일주요업무 (행은 JS로 생성) -->
+      <table class="t" style="margin-top:-1px" id="work-tbl">
+        <colgroup>
+          <col style="width:22%"><col style="width:78%">
+        </colgroup>
+        <tr><td colspan="2" class="C-SEC">금일주요업무</td></tr>
+        <tr>
+          <td class="C-LBL">시 간</td>
+          <td class="C-LBL">업 무 내 용</td>
+        </tr>
+      </table>
+
+      <!-- 3. 익일업무계획 (4행) -->
+      <table class="t" style="margin-top:-1px">
+        <tr><td class="C-SEC">익 일 업 무 계 획</td></tr>
+        <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
+        <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
+        <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
+        <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
+      </table>
+
+      <!-- 4. 금일 지출 내용 -->
+      <table class="t" style="margin-top:-1px">
+        <colgroup>
+          <col style="width:22%"> <!-- L 구매사유 -->
+          <col style="width:10%"> <!-- L 금액 -->
+          <col style="width:10%"> <!-- L 비고 -->
+          <col style="width:24%"> <!-- R 구매사유 / 합계 라벨 -->
+          <col style="width:10%"> <!-- R 금액 / 라벨 -->
+          <col style="width:24%"> <!-- R 비고 / 합계 값 -->
+        </colgroup>
+        <tr><td colspan="6" class="C-SEC">금일 지출 내용</td></tr>
+        <tr>
+          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td><td class="C-LBL">비고</td>
+          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td><td class="C-LBL">비고</td>
+        </tr>
+        <!-- 일반 행 3개 (좌우 모두 입력) -->
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td><input type="text" class="err" autocomplete="off"></td>
+          <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="ern" autocomplete="off"></td>
+        </tr>
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td><input type="text" class="err" autocomplete="off"></td>
+          <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="ern" autocomplete="off"></td>
+        </tr>
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td><input type="text" class="err" autocomplete="off"></td>
+          <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="ern" autocomplete="off"></td>
+        </tr>
+        <!-- 당일 합계 행 (좌: 입력 / 우: 자동계산) -->
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td colspan="2" class="C-SUM">당일 합계</td>
+          <td class="C-VAL" id="daily-total">0</td>
+        </tr>
+        <!-- 전일 이월 합계 행 (좌: 입력 / 우: 자동입력, 수정가능) -->
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td colspan="2" class="C-SUM">전일 이월 합계</td>
+          <td><input type="number" id="prev-carry" oninput="calcExp()" placeholder="0" autocomplete="off"></td>
+        </tr>
+        <!-- 총 이월 합계 행 (좌: 입력 / 우: 자동계산) -->
+        <tr>
+          <td><input type="text" class="elr" autocomplete="off"></td>
+          <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
+          <td><input type="text" class="eln" autocomplete="off"></td>
+          <td colspan="2" class="C-SUM">총 이월 합계</td>
+          <td class="C-VAL" id="grand-total">0</td>
+        </tr>
+        <!-- 비고 -->
+        <tr>
+          <td class="C-LBL">비 고</td>
+          <td colspan="5"><input type="text" id="remark" autocomplete="off"></td>
+        </tr>
+      </table>
+    </div><!-- /report -->
+
+    <div class="btn-row">
+      <button class="btn btn-save" id="btn-save" onclick="saveLog()">💾 저장</button>
+      <button class="btn btn-img"  id="btn-img"  onclick="captureImg()">📷 이미지</button>
+      <button class="btn btn-rst"              onclick="resetForm()">초기화</button>
+    </div>
   </div>
 </div>
 
-<!-- 토스트 -->
+<div id="overlay"><div class="spin"></div></div>
 <div id="toast"></div>
 
 <script>
-  // 오늘 날짜 자동 입력
-  (function() {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
-  })();
+const STORE = 'wlog_v2';
+let curId = null;
 
-  function calcTotal() {
-    let sum = 0;
-    document.querySelectorAll('.ea').forEach(el => sum += Number(el.value) || 0);
-    document.getElementById('total').textContent = sum.toLocaleString();
+/* ─────────────────────────── 초기화 ─── */
+(function init() {
+  // 시간 입력 행 9개 동적 생성
+  const tbl = document.getElementById('work-tbl');
+  for (let i = 0; i < 9; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="tw-wrap">
+          <input type="text" inputmode="numeric" class="ts" maxlength="2" placeholder="0" autocomplete="off">
+          <span class="tw-sep">시 -</span>
+          <input type="text" inputmode="numeric" class="te" maxlength="2" placeholder="0" autocomplete="off">
+          <span class="tw-sep">시</span>
+        </div>
+      </td>
+      <td><input type="text" class="tw" autocomplete="off"></td>`;
+    tbl.appendChild(tr);
   }
+  renderBoard();
+})();
 
-  function showToast(msg, ms = 3500) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.style.display = 'none', ms);
+/* ─────────────────────────── 유틸 ─── */
+function showScr(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('sc-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toast(msg, ms = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', ms);
+}
+function setLoad(on) {
+  document.getElementById('overlay').classList.toggle('show', on);
+  document.getElementById('btn-img').disabled = on;
+}
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function numOf(id) {
+  return Number(String(document.getElementById(id).textContent).replace(/,/g,'')) || 0;
+}
+
+/* ─────────────────────────── 저장소 ─── */
+function getLogs() {
+  try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { return []; }
+}
+function putLogs(logs) { localStorage.setItem(STORE, JSON.stringify(logs)); }
+
+// 날짜 기준 가장 최근 로그
+function lastLog() {
+  const all = getLogs();
+  if (!all.length) return null;
+  return all.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+}
+
+/* ─────────────────────────── 게시판 ─── */
+function renderBoard() {
+  const logs = getLogs().sort((a, b) => new Date(b.date) - new Date(a.date));
+  const el = document.getElementById('post-list');
+  if (!logs.length) {
+    el.innerHTML = '<div class="empty">저장된 업무일지가 없습니다.<br>+ 새 작성을 눌러 시작하세요.</div>';
+    return;
   }
+  el.innerHTML = logs.map(l => `
+    <div class="post-row" onclick="openLog('${l.id}')">
+      <span class="post-d">${l.date}</span>
+      <span class="post-g">총이월 ${Number(l.grandTotal || 0).toLocaleString()}원</span>
+      <button class="del-btn" onclick="delLog(event,'${l.id}')">삭제</button>
+    </div>`).join('');
+}
+function goBoard() { renderBoard(); showScr('board'); }
+function delLog(e, id) {
+  e.stopPropagation();
+  if (!confirm('삭제하시겠습니까?')) return;
+  putLogs(getLogs().filter(l => l.id !== id));
+  renderBoard();
+}
 
-  function setLoading(on) {
-    document.getElementById('overlay').classList.toggle('show', on);
-    document.getElementById('shareBtn').disabled = on;
-  }
+/* ─────────────────────────── 폼 열기 ─── */
+function openNew() {
+  curId = null;
+  clearForm();
+  document.getElementById('f-date').value = today();
+  document.getElementById('form-ttl').textContent = '새 업무일지';
+  // 전일 이월 합계 자동 입력
+  const last = lastLog();
+  document.getElementById('prev-carry').value = last ? (last.grandTotal || 0) : '';
+  calcExp();
+  showScr('form');
+}
+function openLog(id) {
+  const log = getLogs().find(l => l.id === id);
+  if (!log) return;
+  curId = id;
+  document.getElementById('form-ttl').textContent = log.date + ' 업무일지';
+  loadForm(log);
+  showScr('form');
+}
 
-  // 입력 필드를 span으로 교체 → 캡처 → 복원 (html2canvas가 input 스타일을 못 읽는 경우 대비)
-  function maskInputs() {
-    const report = document.getElementById('report');
-    const inputs = report.querySelectorAll('input');
-    const saved = [];
-    inputs.forEach(inp => {
-      const span = document.createElement('span');
-      let val = inp.value;
-      if (inp.classList.contains('ea') && val) {
-        val = Number(val).toLocaleString();
-      }
-      span.textContent = val;
-      Object.assign(span.style, {
-        display: 'block',
-        fontFamily: 'inherit',
-        fontSize: '12px',
-        color: '#111',
-        padding: '1px 2px',
-        minHeight: '18px',
-        wordBreak: 'break-all'
-      });
-      inp.parentNode.insertBefore(span, inp);
-      inp.style.display = 'none';
-      saved.push({ inp, span });
+/* ─────────────────────────── 데이터 ↔ 폼 ─── */
+function clearForm() {
+  document.querySelectorAll('#report input').forEach(el => el.value = '');
+  document.getElementById('daily-total').textContent = '0';
+  document.getElementById('grand-total').textContent = '0';
+}
+
+function loadForm(log) {
+  clearForm();
+  document.getElementById('f-date').value = log.date || '';
+
+  // 시간 / 업무
+  const rows = [...document.querySelectorAll('#work-tbl tr')].filter(r => r.querySelector('.ts'));
+  rows.forEach((tr, i) => {
+    const t = (log.times || [])[i] || {};
+    tr.querySelector('.ts').value = t.s || '';
+    tr.querySelector('.te').value = t.e || '';
+    tr.querySelector('.tw').value = t.w || '';
+  });
+
+  // 익일계획
+  document.querySelectorAll('.np').forEach((el, i) => el.value = (log.nextPlans || [])[i] || '');
+
+  // 지출 left
+  document.querySelectorAll('.elr').forEach((el, i) => el.value = (log.elr || [])[i] || '');
+  document.querySelectorAll('.ela').forEach((el, i) => el.value = (log.ela || [])[i] || '');
+  document.querySelectorAll('.eln').forEach((el, i) => el.value = (log.eln || [])[i] || '');
+  // 지출 right
+  document.querySelectorAll('.err').forEach((el, i) => el.value = (log.err || [])[i] || '');
+  document.querySelectorAll('.era').forEach((el, i) => el.value = (log.era || [])[i] || '');
+  document.querySelectorAll('.ern').forEach((el, i) => el.value = (log.ern || [])[i] || '');
+
+  document.getElementById('prev-carry').value = (log.prevCarry != null) ? log.prevCarry : '';
+  document.getElementById('remark').value = log.remark || '';
+  calcExp();
+}
+
+function getFormData() {
+  const times = [...document.querySelectorAll('#work-tbl tr')]
+    .filter(r => r.querySelector('.ts'))
+    .map(r => ({
+      s: r.querySelector('.ts').value,
+      e: r.querySelector('.te').value,
+      w: r.querySelector('.tw').value
+    }));
+
+  return {
+    id:         curId || String(Date.now()),
+    date:       document.getElementById('f-date').value || today(),
+    times,
+    nextPlans:  [...document.querySelectorAll('.np')].map(e => e.value),
+    elr: [...document.querySelectorAll('.elr')].map(e => e.value),
+    ela: [...document.querySelectorAll('.ela')].map(e => e.value),
+    eln: [...document.querySelectorAll('.eln')].map(e => e.value),
+    err: [...document.querySelectorAll('.err')].map(e => e.value),
+    era: [...document.querySelectorAll('.era')].map(e => e.value),
+    ern: [...document.querySelectorAll('.ern')].map(e => e.value),
+    prevCarry:  Number(document.getElementById('prev-carry').value) || 0,
+    dailyTotal: numOf('daily-total'),
+    grandTotal: numOf('grand-total'),
+    remark:     document.getElementById('remark').value
+  };
+}
+
+/* ─────────────────────────── 계산 ─── */
+function calcExp() {
+  let daily = 0;
+  document.querySelectorAll('.ela, .era').forEach(el => daily += Number(el.value) || 0);
+  const prev  = Number(document.getElementById('prev-carry').value) || 0;
+  document.getElementById('daily-total').textContent = daily.toLocaleString();
+  document.getElementById('grand-total').textContent = (daily + prev).toLocaleString();
+}
+
+/* ─────────────────────────── 저장 ─── */
+function saveLog() {
+  const data = getFormData();
+  if (!data.date) { toast('날짜를 입력해주세요.'); return; }
+  const logs = getLogs().filter(l => l.id !== data.id);
+  logs.push(data);
+  putLogs(logs);
+  curId = data.id;
+  toast('저장되었습니다 ✓');
+  document.getElementById('form-ttl').textContent = data.date + ' 업무일지';
+}
+
+function resetForm() {
+  if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
+  clearForm();
+  document.getElementById('f-date').value = today();
+}
+
+/* ─────────────────────────── 이미지 저장 ─── */
+function maskInputs() {
+  const saved = [];
+  document.querySelectorAll('#report input').forEach(inp => {
+    const isTime   = inp.classList.contains('ts') || inp.classList.contains('te');
+    const isAmount = inp.classList.contains('ela') || inp.classList.contains('era') || inp.id === 'prev-carry';
+    const span = document.createElement('span');
+    let val = inp.value;
+    if (isAmount && val !== '') val = Number(val).toLocaleString();
+    span.textContent = val;
+    Object.assign(span.style, {
+      display:    isTime ? 'inline' : 'block',
+      fontFamily: 'inherit',
+      fontSize:   '11.5px',
+      color:      '#111',
+      minHeight:  isTime ? 'auto' : '16px',
+      textAlign:  isTime ? 'center' : 'left',
+      minWidth:   isTime ? '18px'   : 'auto',
+      wordBreak:  'break-all',
+      fontWeight: (inp.id === 'prev-carry') ? 'bold' : 'normal'
     });
-    return saved;
-  }
+    inp.before(span);
+    inp.style.display = 'none';
+    saved.push({ inp, span });
+  });
+  return saved;
+}
+function restoreInputs(saved) {
+  saved.forEach(({ inp, span }) => { span.remove(); inp.style.display = ''; });
+}
 
-  function restoreInputs(saved) {
-    saved.forEach(({ inp, span }) => {
-      span.remove();
-      inp.style.display = '';
+async function captureImg() {
+  setLoad(true);
+  const saved = maskInputs();
+  try {
+    const canvas = await html2canvas(document.getElementById('report'), {
+      scale: 2.5, backgroundColor: '#fff', logging: false
     });
-  }
+    restoreInputs(saved);
+    const date     = document.getElementById('f-date').value || today();
+    const filename = `일일업무일지_${date}.png`;
+    const blob     = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file     = new File([blob], filename, { type: 'image/png' });
 
-  function canvasToBlob(canvas) {
-    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-  }
-
-  function downloadImage(canvas, filename) {
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  async function captureAndShare() {
-    setLoading(true);
-    const saved = maskInputs();
-
-    try {
-      const report = document.getElementById('report');
-      const canvas = await html2canvas(report, {
-        scale: 2.5,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false
-      });
-
-      restoreInputs(saved);
-
-      const dateVal = document.getElementById('f-date').value || '미입력';
-      const filename = `일일업무일지_${dateVal}.png`;
-
-      const blob = await canvasToBlob(canvas);
-      const file = new File([blob], filename, { type: 'image/png' });
-
-      // Web Share API (모바일 Safari/Chrome 지원)
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: '일일업무일지',
-            text: `${dateVal} 일일업무일지`
-          });
-          showToast('공유가 완료되었습니다 ✓');
-        } catch (e) {
-          if (e.name === 'AbortError') {
-            // 사용자가 취소
-          } else {
-            downloadImage(canvas, filename);
-            showToast('이미지가 저장되었습니다. 갤러리에서 카카오톡으로 공유하세요.');
-          }
-        }
-      } else {
-        // 데스크톱 or 미지원 브라우저 → 다운로드
-        downloadImage(canvas, filename);
-        showToast('이미지 저장 완료! 갤러리에서 카카오톡으로 공유하세요.');
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: '일일업무일지' });
+        toast('공유 완료 ✓');
+      } catch(e) {
+        if (e.name !== 'AbortError') { dlCanvas(canvas, filename); toast('이미지 저장 완료'); }
       }
-    } catch (err) {
-      restoreInputs(saved);
-      showToast('오류가 발생했습니다. 다시 시도해주세요.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } else {
+      dlCanvas(canvas, filename);
+      toast('이미지 저장 완료! 갤러리에서 공유하세요.');
     }
+  } catch(e) {
+    restoreInputs(saved);
+    toast('오류가 발생했습니다.');
+    console.error(e);
+  } finally {
+    setLoad(false);
   }
+}
 
-  function resetForm() {
-    if (!confirm('모든 내용을 초기화하시겠습니까?')) return;
-    document.querySelectorAll('#report input').forEach(el => {
-      if (el.id === 'f-date') {
-        const d = new Date();
-        el.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-      } else {
-        el.value = '';
-      }
-    });
-    document.getElementById('total').textContent = '0';
-  }
+function dlCanvas(canvas, filename) {
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
 </script>
 </body>
 </html>
