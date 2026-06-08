@@ -7,11 +7,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Malgun Gothic', '맑은 고딕', AppleGothic, 'Apple SD Gothic Neo', sans-serif;
-      background: #e8e8e8;
-      min-height: 100vh;
+      background: #e8e8e8; min-height: 100vh;
     }
 
     /* ── 화면 전환 ── */
@@ -20,70 +18,51 @@
     .page { max-width: 480px; margin: 0 auto; }
 
     /* ── 게시판 ── */
-    .brd-head {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 14px;
-    }
-    .brd-title { font-size: 17px; font-weight: bold; color: #222; }
-    .btn-new {
-      background: #222; color: #fff; border: none; border-radius: 8px;
-      padding: 10px 18px; font-size: 14px; cursor: pointer; font-family: inherit;
-    }
-    .post-list {
-      background: #fff; border-radius: 10px; overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,.1);
-    }
-    .post-row {
-      display: flex; align-items: center; padding: 14px 14px;
-      border-bottom: 1px solid #f0f0f0; cursor: pointer;
-    }
+    .brd-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; }
+    .brd-title { font-size: 17px; font-weight: bold; color: #222; flex: 1; }
+    .brd-status { font-size: 11px; color: #888; }
+    .brd-status.on { color: #2ecc71; }
+    .btn-new { background: #222; color: #fff; border: none; border-radius: 8px; padding: 10px 14px; font-size: 14px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .btn-setup { background: none; border: 1px solid #ccc; border-radius: 8px; padding: 9px 12px; font-size: 14px; cursor: pointer; }
+    .post-list { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    .post-row { display: flex; align-items: center; padding: 14px 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
     .post-row:last-child { border-bottom: none; }
     .post-row:active { background: #f8f8f8; }
     .post-d { font-weight: bold; font-size: 14px; flex: 1; color: #111; }
     .post-g { font-size: 12px; color: #666; margin-right: 10px; }
-    .del-btn {
-      background: none; border: 1px solid #e0e0e0; border-radius: 6px;
-      padding: 4px 10px; font-size: 12px; color: #bbb;
-      cursor: pointer; font-family: inherit;
-    }
-    .empty {
-      text-align: center; padding: 44px 16px;
-      color: #aaa; font-size: 14px; line-height: 2;
-    }
+    .del-btn { background: none; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #bbb; cursor: pointer; font-family: inherit; }
+    .empty { text-align: center; padding: 44px 16px; color: #aaa; font-size: 14px; line-height: 2; }
+    .loading-msg { text-align: center; padding: 30px 16px; color: #aaa; font-size: 14px; }
 
-    /* ── 폼 화면 상단 ── */
+    /* ── 설정 화면 ── */
+    .setup-box { background: #fff; border-radius: 12px; padding: 20px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    .setup-box h2 { font-size: 16px; margin-bottom: 16px; color: #222; }
+    .setup-steps { background: #f8f8f8; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13px; line-height: 2; color: #444; }
+    .setup-steps b { color: #222; }
+    .setup-label { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block; }
+    .setup-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; outline: none; margin-bottom: 12px; }
+    .setup-input:focus { border-color: #555; }
+    .setup-btns { display: flex; gap: 8px; }
+    .setup-save { flex: 1; background: #222; color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: bold; cursor: pointer; font-family: inherit; }
+    .setup-cancel { background: #eee; color: #555; border: none; border-radius: 8px; padding: 12px 16px; font-size: 14px; cursor: pointer; font-family: inherit; }
+    .setup-warning { font-size: 12px; color: #e74c3c; margin-bottom: 12px; display: none; }
+    .setup-clear { width: 100%; background: none; border: 1px solid #fcc; border-radius: 8px; padding: 10px; font-size: 13px; color: #e74c3c; cursor: pointer; font-family: inherit; margin-top: 12px; }
+
+    /* ── 폼 화면 ── */
     .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .btn-back {
-      background: none; border: 1px solid #ccc; border-radius: 8px;
-      padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
-    }
+    .btn-back { background: none; border: 1px solid #ccc; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; }
     .topbar-ttl { font-size: 15px; font-weight: bold; flex: 1; }
 
-    /* ── 보고서 테이블 ── */
+    /* ── 보고서 ── */
     #report { background: #fff; padding: 8px; border: 1px solid #aaa; }
-
     .t { width: 100%; border-collapse: collapse; font-size: 11.5px; }
     .t td { border: 1px solid #555; padding: 2px 3px; vertical-align: middle; }
-
-    .C-TITLE {
-      font-size: 18px; font-weight: bold;
-      text-align: center; height: 52px; vertical-align: middle;
-    }
-    .C-SEC {
-      background: #bebebe; text-align: center;
-      font-weight: bold; padding: 4px 3px; letter-spacing: 1px;
-    }
-    .C-LBL {
-      text-align: center; background: #ebebeb;
-      font-weight: bold; white-space: nowrap;
-    }
-    .C-SUM {
-      text-align: center; background: #ebebeb;
-      font-size: 11px; font-weight: bold;
-    }
+    .C-TITLE { font-size: 18px; font-weight: bold; text-align: center; height: 52px; vertical-align: middle; }
+    .C-SEC { background: #bebebe; text-align: center; font-weight: bold; padding: 4px 3px; letter-spacing: 1px; }
+    .C-LBL { text-align: center; background: #ebebeb; font-weight: bold; white-space: nowrap; }
+    .C-SUM { text-align: center; background: #ebebeb; font-size: 11px; font-weight: bold; }
     .C-VAL { text-align: center; font-weight: bold; }
 
-    /* ── 입력 공통 ── */
     input[type="text"], input[type="number"] {
       width: 100%; border: none; outline: none; font-family: inherit;
       font-size: 11.5px; background: transparent; color: #111;
@@ -92,28 +71,14 @@
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-    /* ── 시간 입력 ── */
-    .tw-wrap {
-      display: flex; align-items: center;
-      justify-content: center; font-size: 11px; gap: 1px;
-    }
-    .tw-wrap input[type="text"] {
-      width: 22px !important; text-align: center !important;
-      padding: 1px 0 !important; min-height: auto !important;
-    }
+    .tw-wrap { display: flex; align-items: center; justify-content: center; font-size: 11px; gap: 1px; }
+    .tw-wrap input[type="text"] { width: 22px !important; text-align: center !important; padding: 1px 0 !important; min-height: auto !important; }
     .tw-sep { font-size: 11px; white-space: nowrap; color: #333; }
-
-    /* ── 합계 셀 입력 ── */
-    #prev-carry {
-      text-align: center; font-weight: bold; font-size: 12px;
-    }
+    #prev-carry { text-align: center; font-weight: bold; font-size: 12px; }
 
     /* ── 버튼 ── */
     .btn-row { margin-top: 12px; display: flex; gap: 8px; }
-    .btn {
-      flex: 1; padding: 14px 6px; font-size: 14px; font-weight: bold;
-      border: none; border-radius: 10px; cursor: pointer; font-family: inherit;
-    }
+    .btn { flex: 1; padding: 14px 6px; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; }
     .btn:active { opacity: .8; }
     .btn-save { background: #333; color: #fff; }
     .btn-img  { background: #fee500; color: #3c1e1e; }
@@ -121,40 +86,66 @@
     .btn:disabled { opacity: .5; cursor: not-allowed; }
 
     /* ── 로딩 / 토스트 ── */
-    #overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(255,255,255,.75); z-index: 9998;
-      justify-content: center; align-items: center;
-    }
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,.75); z-index: 9998; justify-content: center; align-items: center; }
     #overlay.show { display: flex; }
-    .spin {
-      width: 34px; height: 34px; border: 4px solid #ddd;
-      border-top-color: #555; border-radius: 50%;
-      animation: rot .8s linear infinite;
-    }
+    .spin { width: 34px; height: 34px; border: 4px solid #ddd; border-top-color: #555; border-radius: 50%; animation: rot .8s linear infinite; }
     @keyframes rot { to { transform: rotate(360deg); } }
-    #toast {
-      display: none; position: fixed; bottom: 88px; left: 50%;
-      transform: translateX(-50%); background: rgba(0,0,0,.78);
-      color: #fff; padding: 10px 18px; border-radius: 20px;
-      font-size: 13px; z-index: 9999; white-space: nowrap;
-    }
+    #toast { display: none; position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.78); color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 13px; z-index: 9999; white-space: nowrap; max-width: 90vw; text-align: center; }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════ 게시판 화면 ═══ -->
+<!-- ══════════════ 게시판 화면 ══════════════ -->
 <div id="sc-board" class="screen active">
   <div class="page">
     <div class="brd-head">
-      <span class="brd-title">📋 업무일지 게시판</span>
+      <div>
+        <div class="brd-title">📋 업무일지 게시판</div>
+        <div class="brd-status" id="db-status">● 로컬 저장</div>
+      </div>
+      <button class="btn-setup" onclick="showScr('setup')" title="서버 설정">⚙️</button>
       <button class="btn-new" onclick="openNew()">+ 새 작성</button>
     </div>
-    <div class="post-list" id="post-list"></div>
+    <div class="post-list" id="post-list">
+      <div class="loading-msg">불러오는 중...</div>
+    </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════ 작성/조회 화면 ═══ -->
+<!-- ══════════════ Firebase 설정 화면 ══════════════ -->
+<div id="sc-setup" class="screen">
+  <div class="page">
+    <div class="topbar">
+      <button class="btn-back" onclick="showScr('board')">← 뒤로</button>
+      <span class="topbar-ttl">🔧 서버 연동 설정</span>
+    </div>
+    <div class="setup-box">
+      <h2>Firebase 연동으로 여러 기기에서 공유하기</h2>
+      <div class="setup-steps">
+        <b>① 설정 방법 (무료 · 5분 소요)</b><br>
+        1. <b>console.firebase.google.com</b> 접속 후 구글 로그인<br>
+        2. <b>프로젝트 추가</b> → 이름 입력 → <b>프로젝트 만들기</b><br>
+        3. 왼쪽 메뉴 <b>빌드 → Realtime Database</b> 클릭<br>
+        4. <b>데이터베이스 만들기 → 테스트 모드</b> → 완료<br>
+        5. 상단에 표시된 URL 복사<br>
+        &nbsp;&nbsp;&nbsp;예: <b>https://프로젝트명-default-rtdb.firebaseio.com</b><br>
+        6. 아래에 붙여넣고 저장
+      </div>
+      <label class="setup-label">Firebase Database URL</label>
+      <input class="setup-input" id="setup-url" type="url"
+             placeholder="https://프로젝트명-default-rtdb.firebaseio.com"
+             autocomplete="off">
+      <div class="setup-warning" id="setup-warn">URL 형식이 올바르지 않습니다.</div>
+      <div class="setup-btns">
+        <button class="setup-save" onclick="saveSetup()">저장 &amp; 연결</button>
+        <button class="setup-cancel" onclick="showScr('board')">취소</button>
+      </div>
+      <button class="setup-clear" onclick="clearSetup()">🔌 연동 해제 (로컬 저장으로 변경)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 작성/조회 화면 ══════════════ -->
 <div id="sc-form" class="screen">
   <div class="page">
     <div class="topbar">
@@ -162,14 +153,10 @@
       <span class="topbar-ttl" id="form-ttl">새 업무일지</span>
     </div>
 
-    <!-- 보고서 (이미지 캡처 대상) -->
     <div id="report">
-
-      <!-- 1. 헤더 -->
+      <!-- 헤더 -->
       <table class="t">
-        <colgroup>
-          <col style="width:55%"><col style="width:18%"><col style="width:27%">
-        </colgroup>
+        <colgroup><col style="width:55%"><col style="width:18%"><col style="width:27%"></colgroup>
         <tr>
           <td class="C-TITLE">일일업무일지</td>
           <td class="C-LBL">날 짜</td>
@@ -177,19 +164,14 @@
         </tr>
       </table>
 
-      <!-- 2. 금일주요업무 (행은 JS로 생성) -->
+      <!-- 금일주요업무 -->
       <table class="t" style="margin-top:-1px" id="work-tbl">
-        <colgroup>
-          <col style="width:22%"><col style="width:78%">
-        </colgroup>
+        <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
         <tr><td colspan="2" class="C-SEC">금일주요업무</td></tr>
-        <tr>
-          <td class="C-LBL">시 간</td>
-          <td class="C-LBL">업 무 내 용</td>
-        </tr>
+        <tr><td class="C-LBL">시 간</td><td class="C-LBL">업 무 내 용</td></tr>
       </table>
 
-      <!-- 3. 익일업무계획 (4행) -->
+      <!-- 익일업무계획 (4행) -->
       <table class="t" style="margin-top:-1px">
         <tr><td class="C-SEC">익 일 업 무 계 획</td></tr>
         <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
@@ -198,82 +180,71 @@
         <tr><td style="height:24px"><input type="text" class="np" autocomplete="off"></td></tr>
       </table>
 
-      <!-- 4. 금일 지출 내용 -->
+      <!-- 금일 지출 내용 (비고 삭제, 금액칸 확대) -->
       <table class="t" style="margin-top:-1px">
         <colgroup>
-          <col style="width:22%"> <!-- L 구매사유 -->
-          <col style="width:10%"> <!-- L 금액 -->
-          <col style="width:10%"> <!-- L 비고 -->
-          <col style="width:24%"> <!-- R 구매사유 / 합계 라벨 -->
-          <col style="width:10%"> <!-- R 금액 / 라벨 -->
-          <col style="width:24%"> <!-- R 비고 / 합계 값 -->
+          <col style="width:30%"> <!-- L 구매사유 -->
+          <col style="width:20%"> <!-- L 금액 (확대) -->
+          <col style="width:30%"> <!-- R 구매사유 / 합계라벨 -->
+          <col style="width:20%"> <!-- R 금액 / 합계값 (확대) -->
         </colgroup>
-        <tr><td colspan="6" class="C-SEC">금일 지출 내용</td></tr>
+        <tr><td colspan="4" class="C-SEC">금일 지출 내용</td></tr>
         <tr>
-          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td><td class="C-LBL">비고</td>
-          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td><td class="C-LBL">비고</td>
+          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td>
+          <td class="C-LBL">구매사유</td><td class="C-LBL">금액</td>
         </tr>
-        <!-- 일반 행 3개 (좌우 모두 입력) -->
+        <!-- 일반 행 3개 -->
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
           <td><input type="text" class="err" autocomplete="off"></td>
           <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="ern" autocomplete="off"></td>
         </tr>
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
           <td><input type="text" class="err" autocomplete="off"></td>
           <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="ern" autocomplete="off"></td>
         </tr>
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
           <td><input type="text" class="err" autocomplete="off"></td>
           <td><input type="number" class="era" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="ern" autocomplete="off"></td>
         </tr>
-        <!-- 당일 합계 행 (좌: 입력 / 우: 자동계산) -->
+        <!-- 당일 합계 -->
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
-          <td colspan="2" class="C-SUM">당일 합계</td>
+          <td class="C-SUM">당일 합계</td>
           <td class="C-VAL" id="daily-total">0</td>
         </tr>
-        <!-- 전일 이월 합계 행 (좌: 입력 / 우: 자동입력, 수정가능) -->
+        <!-- 전일 이월 합계 -->
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
-          <td colspan="2" class="C-SUM">전일 이월 합계</td>
+          <td class="C-SUM">전일 이월 합계</td>
           <td><input type="number" id="prev-carry" oninput="calcExp()" placeholder="0" autocomplete="off"></td>
         </tr>
-        <!-- 총 이월 합계 행 (좌: 입력 / 우: 자동계산) -->
+        <!-- 총 이월 합계 -->
         <tr>
           <td><input type="text" class="elr" autocomplete="off"></td>
           <td><input type="number" class="ela" oninput="calcExp()" placeholder="0"></td>
-          <td><input type="text" class="eln" autocomplete="off"></td>
-          <td colspan="2" class="C-SUM">총 이월 합계</td>
+          <td class="C-SUM">총 이월 합계</td>
           <td class="C-VAL" id="grand-total">0</td>
         </tr>
         <!-- 비고 -->
         <tr>
           <td class="C-LBL">비 고</td>
-          <td colspan="5"><input type="text" id="remark" autocomplete="off"></td>
+          <td colspan="3"><input type="text" id="remark" autocomplete="off"></td>
         </tr>
       </table>
-    </div><!-- /report -->
+    </div>
 
     <div class="btn-row">
       <button class="btn btn-save" id="btn-save" onclick="saveLog()">💾 저장</button>
       <button class="btn btn-img"  id="btn-img"  onclick="captureImg()">📷 이미지</button>
-      <button class="btn btn-rst"              onclick="resetForm()">초기화</button>
+      <button class="btn btn-rst"               onclick="resetForm()">초기화</button>
     </div>
   </div>
 </div>
@@ -282,31 +253,136 @@
 <div id="toast"></div>
 
 <script>
-const STORE = 'wlog_v2';
+/* ═══════════════════════════════════════════
+   Firebase REST API (SDK 불필요)
+═══════════════════════════════════════════ */
+const FB_URL_KEY  = 'fbDbUrl';
+const LOCAL_KEY   = 'wlog_v2';
+const MIGR_KEY    = 'fb_migrated_v3';
+
+function getDbUrl() {
+  return (localStorage.getItem(FB_URL_KEY) || '').replace(/\/$/, '');
+}
+function isFirebase() { return !!getDbUrl(); }
+
+async function fbFetch(path, opts = {}) {
+  const res = await fetch(getDbUrl() + path, opts);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function dbGetLogs() {
+  if (!isFirebase()) return localGetLogs();
+  try {
+    const data = await fbFetch('/logs.json');
+    if (!data || typeof data !== 'object') return [];
+    return Object.values(data).filter(Boolean);
+  } catch(e) {
+    console.error(e);
+    toast('서버 연결 실패. 로컬 데이터를 표시합니다.');
+    return localGetLogs();
+  }
+}
+
+async function dbPutLog(log) {
+  localPutLog(log); // 항상 로컬에도 저장 (캐시)
+  if (!isFirebase()) return;
+  try {
+    await fbFetch(`/logs/${log.id}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log)
+    });
+  } catch(e) {
+    console.error(e);
+    toast('서버 저장 실패. 로컬에 임시 저장됩니다.');
+  }
+}
+
+async function dbDeleteLog(id) {
+  localDeleteLog(id);
+  if (!isFirebase()) return;
+  try {
+    await fbFetch(`/logs/${id}.json`, { method: 'DELETE' });
+  } catch(e) {
+    console.error(e);
+    toast('서버 삭제 실패. 다시 시도해주세요.');
+  }
+}
+
+/* ═══════════════════════════════════════════
+   로컬 저장소 (fallback)
+═══════════════════════════════════════════ */
+function localGetLogs() {
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]'); } catch(e) { return []; }
+}
+function localPutLog(log) {
+  const logs = localGetLogs().filter(l => l.id !== log.id);
+  logs.push(log);
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(logs));
+}
+function localDeleteLog(id) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(localGetLogs().filter(l => l.id !== id)));
+}
+
+/* ═══════════════════════════════════════════
+   초기화
+═══════════════════════════════════════════ */
 let curId = null;
 
-/* ─────────────────────────── 초기화 ─── */
 (function init() {
-  // 시간 입력 행 9개 동적 생성
+  // 시간 행 9개 생성
   const tbl = document.getElementById('work-tbl');
   for (let i = 0; i < 9; i++) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>
-        <div class="tw-wrap">
-          <input type="text" inputmode="numeric" class="ts" maxlength="2" placeholder="0" autocomplete="off">
-          <span class="tw-sep">시 -</span>
-          <input type="text" inputmode="numeric" class="te" maxlength="2" placeholder="0" autocomplete="off">
-          <span class="tw-sep">시</span>
-        </div>
-      </td>
+      <td><div class="tw-wrap">
+        <input type="text" inputmode="numeric" class="ts" maxlength="2" placeholder="0" autocomplete="off">
+        <span class="tw-sep">시 -</span>
+        <input type="text" inputmode="numeric" class="te" maxlength="2" placeholder="0" autocomplete="off">
+        <span class="tw-sep">시</span>
+      </div></td>
       <td><input type="text" class="tw" autocomplete="off"></td>`;
     tbl.appendChild(tr);
   }
-  renderBoard();
+
+  // Firebase URL 있으면 기존 데이터 자동 마이그레이션
+  if (isFirebase()) autoMigrate().then(() => renderBoard());
+  else renderBoard();
+
+  updateDbStatus();
+
+  // 설정 화면에 현재 URL 표시
+  document.getElementById('setup-url').value = getDbUrl();
 })();
 
-/* ─────────────────────────── 유틸 ─── */
+/* ═══════════════════════════════════════════
+   자동 마이그레이션 (로컬 → Firebase)
+═══════════════════════════════════════════ */
+async function autoMigrate() {
+  if (localStorage.getItem(MIGR_KEY)) return;
+  const locals = localGetLogs();
+  if (!locals.length) { localStorage.setItem(MIGR_KEY, '1'); return; }
+
+  try {
+    toast(`기존 데이터 ${locals.length}건 서버 동기화 중...`, 5000);
+    for (const log of locals) {
+      await fbFetch(`/logs/${log.id}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(log)
+      });
+    }
+    localStorage.setItem(MIGR_KEY, '1');
+    toast(`✓ ${locals.length}건이 서버에 동기화되었습니다`);
+  } catch(e) {
+    console.error('마이그레이션 실패:', e);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   유틸
+═══════════════════════════════════════════ */
 function showScr(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('sc-' + id).classList.add('active');
@@ -328,24 +404,57 @@ function today() {
 function numOf(id) {
   return Number(String(document.getElementById(id).textContent).replace(/,/g,'')) || 0;
 }
-
-/* ─────────────────────────── 저장소 ─── */
-function getLogs() {
-  try { return JSON.parse(localStorage.getItem(STORE) || '[]'); } catch(e) { return []; }
-}
-function putLogs(logs) { localStorage.setItem(STORE, JSON.stringify(logs)); }
-
-// 날짜 기준 가장 최근 로그
-function lastLog() {
-  const all = getLogs();
-  if (!all.length) return null;
-  return all.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+function updateDbStatus() {
+  const el = document.getElementById('db-status');
+  if (isFirebase()) {
+    el.textContent = '● 서버 연동 중';
+    el.className = 'brd-status on';
+  } else {
+    el.textContent = '● 로컬 저장 (⚙️ 설정에서 공유 가능)';
+    el.className = 'brd-status';
+  }
 }
 
-/* ─────────────────────────── 게시판 ─── */
-function renderBoard() {
-  const logs = getLogs().sort((a, b) => new Date(b.date) - new Date(a.date));
+/* ═══════════════════════════════════════════
+   설정 화면
+═══════════════════════════════════════════ */
+async function saveSetup() {
+  const url = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
+  const warn = document.getElementById('setup-warn');
+
+  if (!url.includes('firebaseio.com')) {
+    warn.style.display = 'block';
+    return;
+  }
+  warn.style.display = 'none';
+
+  localStorage.setItem(FB_URL_KEY, url);
+  localStorage.removeItem(MIGR_KEY); // 마이그레이션 재실행 허용
+  updateDbStatus();
+  toast('서버 연동이 설정되었습니다. 기존 데이터를 동기화합니다...');
+
+  showScr('board');
+  await autoMigrate();
+  renderBoard();
+}
+
+function clearSetup() {
+  if (!confirm('서버 연동을 해제하고 로컬 저장으로 변경하시겠습니까?')) return;
+  localStorage.removeItem(FB_URL_KEY);
+  updateDbStatus();
+  document.getElementById('setup-url').value = '';
+  toast('로컬 저장으로 변경되었습니다.');
+  showScr('board');
+  renderBoard();
+}
+
+/* ═══════════════════════════════════════════
+   게시판
+═══════════════════════════════════════════ */
+async function renderBoard() {
   const el = document.getElementById('post-list');
+  el.innerHTML = '<div class="loading-msg">불러오는 중...</div>';
+  const logs = (await dbGetLogs()).sort((a, b) => new Date(b.date) - new Date(a.date));
   if (!logs.length) {
     el.innerHTML = '<div class="empty">저장된 업무일지가 없습니다.<br>+ 새 작성을 눌러 시작하세요.</div>';
     return;
@@ -357,28 +466,40 @@ function renderBoard() {
       <button class="del-btn" onclick="delLog(event,'${l.id}')">삭제</button>
     </div>`).join('');
 }
-function goBoard() { renderBoard(); showScr('board'); }
-function delLog(e, id) {
-  e.stopPropagation();
-  if (!confirm('삭제하시겠습니까?')) return;
-  putLogs(getLogs().filter(l => l.id !== id));
-  renderBoard();
+
+async function goBoard() {
+  showScr('board');
+  await renderBoard();
 }
 
-/* ─────────────────────────── 폼 열기 ─── */
-function openNew() {
+async function delLog(e, id) {
+  e.stopPropagation();
+  if (!confirm('삭제하시겠습니까?')) return;
+  await dbDeleteLog(id);
+  await renderBoard();
+}
+
+/* ═══════════════════════════════════════════
+   폼 열기
+═══════════════════════════════════════════ */
+async function openNew() {
   curId = null;
   clearForm();
   document.getElementById('f-date').value = today();
   document.getElementById('form-ttl').textContent = '새 업무일지';
-  // 전일 이월 합계 자동 입력
-  const last = lastLog();
-  document.getElementById('prev-carry').value = last ? (last.grandTotal || 0) : '';
+  // 전일 이월 합계: 가장 최근 일지의 총이월합계
+  const logs = await dbGetLogs();
+  if (logs.length) {
+    const last = logs.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    document.getElementById('prev-carry').value = last.grandTotal || 0;
+  }
   calcExp();
   showScr('form');
 }
-function openLog(id) {
-  const log = getLogs().find(l => l.id === id);
+
+async function openLog(id) {
+  const logs = await dbGetLogs();
+  const log = logs.find(l => l.id === id);
   if (!log) return;
   curId = id;
   document.getElementById('form-ttl').textContent = log.date + ' 업무일지';
@@ -386,7 +507,9 @@ function openLog(id) {
   showScr('form');
 }
 
-/* ─────────────────────────── 데이터 ↔ 폼 ─── */
+/* ═══════════════════════════════════════════
+   데이터 ↔ 폼
+═══════════════════════════════════════════ */
 function clearForm() {
   document.querySelectorAll('#report input').forEach(el => el.value = '');
   document.getElementById('daily-total').textContent = '0';
@@ -397,7 +520,6 @@ function loadForm(log) {
   clearForm();
   document.getElementById('f-date').value = log.date || '';
 
-  // 시간 / 업무
   const rows = [...document.querySelectorAll('#work-tbl tr')].filter(r => r.querySelector('.ts'));
   rows.forEach((tr, i) => {
     const t = (log.times || [])[i] || {};
@@ -406,17 +528,12 @@ function loadForm(log) {
     tr.querySelector('.tw').value = t.w || '';
   });
 
-  // 익일계획
   document.querySelectorAll('.np').forEach((el, i) => el.value = (log.nextPlans || [])[i] || '');
 
-  // 지출 left
   document.querySelectorAll('.elr').forEach((el, i) => el.value = (log.elr || [])[i] || '');
   document.querySelectorAll('.ela').forEach((el, i) => el.value = (log.ela || [])[i] || '');
-  document.querySelectorAll('.eln').forEach((el, i) => el.value = (log.eln || [])[i] || '');
-  // 지출 right
   document.querySelectorAll('.err').forEach((el, i) => el.value = (log.err || [])[i] || '');
   document.querySelectorAll('.era').forEach((el, i) => el.value = (log.era || [])[i] || '');
-  document.querySelectorAll('.ern').forEach((el, i) => el.value = (log.ern || [])[i] || '');
 
   document.getElementById('prev-carry').value = (log.prevCarry != null) ? log.prevCarry : '';
   document.getElementById('remark').value = log.remark || '';
@@ -426,12 +543,7 @@ function loadForm(log) {
 function getFormData() {
   const times = [...document.querySelectorAll('#work-tbl tr')]
     .filter(r => r.querySelector('.ts'))
-    .map(r => ({
-      s: r.querySelector('.ts').value,
-      e: r.querySelector('.te').value,
-      w: r.querySelector('.tw').value
-    }));
-
+    .map(r => ({ s: r.querySelector('.ts').value, e: r.querySelector('.te').value, w: r.querySelector('.tw').value }));
   return {
     id:         curId || String(Date.now()),
     date:       document.getElementById('f-date').value || today(),
@@ -439,10 +551,8 @@ function getFormData() {
     nextPlans:  [...document.querySelectorAll('.np')].map(e => e.value),
     elr: [...document.querySelectorAll('.elr')].map(e => e.value),
     ela: [...document.querySelectorAll('.ela')].map(e => e.value),
-    eln: [...document.querySelectorAll('.eln')].map(e => e.value),
     err: [...document.querySelectorAll('.err')].map(e => e.value),
     era: [...document.querySelectorAll('.era')].map(e => e.value),
-    ern: [...document.querySelectorAll('.ern')].map(e => e.value),
     prevCarry:  Number(document.getElementById('prev-carry').value) || 0,
     dailyTotal: numOf('daily-total'),
     grandTotal: numOf('grand-total'),
@@ -450,25 +560,32 @@ function getFormData() {
   };
 }
 
-/* ─────────────────────────── 계산 ─── */
+/* ═══════════════════════════════════════════
+   계산
+═══════════════════════════════════════════ */
 function calcExp() {
   let daily = 0;
   document.querySelectorAll('.ela, .era').forEach(el => daily += Number(el.value) || 0);
-  const prev  = Number(document.getElementById('prev-carry').value) || 0;
+  const prev = Number(document.getElementById('prev-carry').value) || 0;
   document.getElementById('daily-total').textContent = daily.toLocaleString();
   document.getElementById('grand-total').textContent = (daily + prev).toLocaleString();
 }
 
-/* ─────────────────────────── 저장 ─── */
-function saveLog() {
+/* ═══════════════════════════════════════════
+   저장 / 초기화
+═══════════════════════════════════════════ */
+async function saveLog() {
   const data = getFormData();
   if (!data.date) { toast('날짜를 입력해주세요.'); return; }
-  const logs = getLogs().filter(l => l.id !== data.id);
-  logs.push(data);
-  putLogs(logs);
-  curId = data.id;
-  toast('저장되었습니다 ✓');
-  document.getElementById('form-ttl').textContent = data.date + ' 업무일지';
+  document.getElementById('btn-save').disabled = true;
+  try {
+    await dbPutLog(data);
+    curId = data.id;
+    toast('저장되었습니다 ✓');
+    document.getElementById('form-ttl').textContent = data.date + ' 업무일지';
+  } finally {
+    document.getElementById('btn-save').disabled = false;
+  }
 }
 
 function resetForm() {
@@ -477,7 +594,9 @@ function resetForm() {
   document.getElementById('f-date').value = today();
 }
 
-/* ─────────────────────────── 이미지 저장 ─── */
+/* ═══════════════════════════════════════════
+   이미지 저장 & 공유
+═══════════════════════════════════════════ */
 function maskInputs() {
   const saved = [];
   document.querySelectorAll('#report input').forEach(inp => {
@@ -488,18 +607,13 @@ function maskInputs() {
     if (isAmount && val !== '') val = Number(val).toLocaleString();
     span.textContent = val;
     Object.assign(span.style, {
-      display:    isTime ? 'inline' : 'block',
-      fontFamily: 'inherit',
-      fontSize:   '11.5px',
-      color:      '#111',
-      minHeight:  isTime ? 'auto' : '16px',
-      textAlign:  isTime ? 'center' : 'left',
-      minWidth:   isTime ? '18px'   : 'auto',
-      wordBreak:  'break-all',
-      fontWeight: (inp.id === 'prev-carry') ? 'bold' : 'normal'
+      display: isTime ? 'inline' : 'block', fontFamily: 'inherit',
+      fontSize: '11.5px', color: '#111',
+      minHeight: isTime ? 'auto' : '16px', textAlign: isTime ? 'center' : 'left',
+      minWidth: isTime ? '18px' : 'auto', wordBreak: 'break-all',
+      fontWeight: inp.id === 'prev-carry' ? 'bold' : 'normal'
     });
-    inp.before(span);
-    inp.style.display = 'none';
+    inp.before(span); inp.style.display = 'none';
     saved.push({ inp, span });
   });
   return saved;
@@ -512,39 +626,25 @@ async function captureImg() {
   setLoad(true);
   const saved = maskInputs();
   try {
-    const canvas = await html2canvas(document.getElementById('report'), {
-      scale: 2.5, backgroundColor: '#fff', logging: false
-    });
+    const canvas = await html2canvas(document.getElementById('report'), { scale: 2.5, backgroundColor: '#fff', logging: false });
     restoreInputs(saved);
-    const date     = document.getElementById('f-date').value || today();
+    const date = document.getElementById('f-date').value || today();
     const filename = `일일업무일지_${date}.png`;
-    const blob     = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    const file     = new File([blob], filename, { type: 'image/png' });
-
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const file = new File([blob], filename, { type: 'image/png' });
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], title: '일일업무일지' });
-        toast('공유 완료 ✓');
-      } catch(e) {
-        if (e.name !== 'AbortError') { dlCanvas(canvas, filename); toast('이미지 저장 완료'); }
-      }
+      try { await navigator.share({ files: [file], title: '일일업무일지' }); toast('공유 완료 ✓'); }
+      catch(e) { if (e.name !== 'AbortError') { dlCanvas(canvas, filename); toast('이미지 저장 완료'); } }
     } else {
       dlCanvas(canvas, filename);
       toast('이미지 저장 완료! 갤러리에서 공유하세요.');
     }
-  } catch(e) {
-    restoreInputs(saved);
-    toast('오류가 발생했습니다.');
-    console.error(e);
-  } finally {
-    setLoad(false);
-  }
+  } catch(e) { restoreInputs(saved); toast('오류가 발생했습니다.'); console.error(e); }
+  finally { setLoad(false); }
 }
 
 function dlCanvas(canvas, filename) {
-  const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = filename;
+  const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 </script>
