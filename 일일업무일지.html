@@ -256,12 +256,13 @@
 /* ═══════════════════════════════════════════
    Firebase REST API (SDK 불필요)
 ═══════════════════════════════════════════ */
-const FB_URL_KEY  = 'fbDbUrl';
-const LOCAL_KEY   = 'wlog_v2';
-const MIGR_KEY    = 'fb_migrated_v3';
+const FB_URL_KEY    = 'fbDbUrl';
+const LOCAL_KEY     = 'wlog_v2';
+const MIGR_KEY      = 'fb_migrated_v3';
+const DEFAULT_DB    = 'https://bogo-3253d-default-rtdb.firebaseio.com';
 
 function getDbUrl() {
-  return (localStorage.getItem(FB_URL_KEY) || '').replace(/\/$/, '');
+  return (localStorage.getItem(FB_URL_KEY) || DEFAULT_DB).replace(/\/$/, '');
 }
 function isFirebase() { return !!getDbUrl(); }
 
