@@ -25,14 +25,35 @@
     .btn-new { background: #222; color: #fff; border: none; border-radius: 8px; padding: 10px 14px; font-size: 14px; cursor: pointer; font-family: inherit; white-space: nowrap; }
     .btn-setup { background: none; border: 1px solid #ccc; border-radius: 8px; padding: 9px 12px; font-size: 14px; cursor: pointer; }
     .post-list { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
-    .post-row { display: flex; align-items: center; padding: 14px 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
     .post-row:last-child { border-bottom: none; }
     .post-row:active { background: #f8f8f8; }
-    .post-d { font-weight: bold; font-size: 14px; flex: 1; color: #111; }
-    .post-g { font-size: 12px; color: #666; margin-right: 10px; }
+    .post-d { font-weight: bold; font-size: 14px; color: #111; }
+    .post-g { font-size: 12px; color: #666; margin-right: 10px; white-space: nowrap; }
     .del-btn { background: none; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #bbb; cursor: pointer; font-family: inherit; }
     .empty { text-align: center; padding: 44px 16px; color: #aaa; font-size: 14px; line-height: 2; }
     .loading-msg { text-align: center; padding: 30px 16px; color: #aaa; font-size: 14px; }
+
+    /* ── 검색 ── */
+    .search-wrap { position: relative; margin-bottom: 12px; }
+    .search-inp {
+      width: 100%; padding: 11px 40px 11px 38px; border: none;
+      border-radius: 10px; font-size: 14px; font-family: inherit;
+      background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1);
+      outline: none; color: #222;
+    }
+    .search-inp:focus { box-shadow: 0 0 0 2px #555; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
+    .search-clear {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: #ccc; color: #fff; border: none; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px; cursor: pointer;
+      display: none; align-items: center; justify-content: center; line-height: 1;
+    }
+    .search-count { font-size: 12px; color: #888; margin-bottom: 8px; padding-left: 2px; }
+    .post-preview { font-size: 11.5px; color: #888; margin-top: 2px; }
+    .post-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; gap: 8px; }
+    .post-info { flex: 1; min-width: 0; }
+    mark { background: #fff176; color: #111; border-radius: 2px; padding: 0 1px; }
 
     /* ── 설정 화면 ── */
     .setup-box { background: #fff; border-radius: 12px; padding: 20px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
@@ -106,6 +127,15 @@
       <button class="btn-setup" onclick="showScr('setup')" title="서버 설정">⚙️</button>
       <button class="btn-new" onclick="openNew()">+ 새 작성</button>
     </div>
+    <!-- 검색창 -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-inp" id="search-inp" type="text"
+             placeholder="날짜, 업무내용, 지출내역 검색..."
+             oninput="filterBoard()" autocomplete="off">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="search-count" id="search-count"></div>
     <div class="post-list" id="post-list">
       <div class="loading-msg">불러오는 중...</div>
     </div>
@@ -450,22 +480,93 @@ function clearSetup() {
 }
 
 /* ═══════════════════════════════════════════
-   게시판
+   게시판 + 검색
 ═══════════════════════════════════════════ */
+let allLogs = []; // 전체 로그 캐시
+
 async function renderBoard() {
   const el = document.getElementById('post-list');
   el.innerHTML = '<div class="loading-msg">불러오는 중...</div>';
-  const logs = (await dbGetLogs()).sort((a, b) => new Date(b.date) - new Date(a.date));
+  allLogs = (await dbGetLogs()).sort((a, b) => new Date(b.date) - new Date(a.date));
+  filterBoard();
+}
+
+function filterBoard() {
+  const q = document.getElementById('search-inp').value.trim().toLowerCase();
+  const clearBtn = document.getElementById('search-clear');
+  const countEl  = document.getElementById('search-count');
+
+  clearBtn.style.display = q ? 'flex' : 'none';
+
+  const filtered = q ? allLogs.filter(l => logMatchesQuery(l, q)) : allLogs;
+
+  if (q) countEl.textContent = `검색결과 ${filtered.length}건`;
+  else   countEl.textContent = allLogs.length ? `전체 ${allLogs.length}건` : '';
+
+  renderList(filtered, q);
+}
+
+function clearSearch() {
+  document.getElementById('search-inp').value = '';
+  filterBoard();
+  document.getElementById('search-inp').focus();
+}
+
+function logMatchesQuery(log, q) {
+  const fields = [
+    log.date || '',
+    ...(log.times     || []).map(t => t.w  || ''),
+    ...(log.nextPlans || []),
+    ...(log.elr       || []),
+    ...(log.err       || []),
+    log.remark || ''
+  ];
+  return fields.some(f => f.toLowerCase().includes(q));
+}
+
+function renderList(logs, q = '') {
+  const el = document.getElementById('post-list');
   if (!logs.length) {
-    el.innerHTML = '<div class="empty">저장된 업무일지가 없습니다.<br>+ 새 작성을 눌러 시작하세요.</div>';
+    el.innerHTML = q
+      ? '<div class="empty">검색 결과가 없습니다.</div>'
+      : '<div class="empty">저장된 업무일지가 없습니다.<br>+ 새 작성을 눌러 시작하세요.</div>';
     return;
   }
-  el.innerHTML = logs.map(l => `
+  el.innerHTML = logs.map(l => {
+    const preview = q ? getMatchPreview(l, q) : '';
+    return `
     <div class="post-row" onclick="openLog('${l.id}')">
-      <span class="post-d">${l.date}</span>
+      <div class="post-info">
+        <div class="post-d">${hl(l.date, q)}</div>
+        ${preview ? `<div class="post-preview">${preview}</div>` : ''}
+      </div>
       <span class="post-g">총이월 ${Number(l.grandTotal || 0).toLocaleString()}원</span>
       <button class="del-btn" onclick="delLog(event,'${l.id}')">삭제</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+// 검색어 하이라이트
+function hl(text, q) {
+  if (!q || !text) return text || '';
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+// 매칭된 내용 미리보기
+function getMatchPreview(log, q) {
+  const fields = [
+    ...(log.times     || []).map(t => t.w).filter(Boolean),
+    ...(log.nextPlans || []).filter(Boolean),
+    ...(log.elr       || []).filter(Boolean),
+    ...(log.err       || []).filter(Boolean),
+    log.remark
+  ].filter(Boolean);
+
+  const hit = fields.find(f => f.toLowerCase().includes(q.toLowerCase()));
+  if (!hit) return '';
+  const short = hit.length > 35 ? hit.slice(0, 35) + '…' : hit;
+  return hl(short, q);
 }
 
 async function goBoard() {
